@@ -1,81 +1,247 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Singh Hut</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href={{ url_for('static', filename='css/home.css') }} />
 <link rel="stylesheet" href={{ url_for('static', filename='css/topStyle.css') }} />
+<link href="../static/css/style.css" type="text/css" rel="stylesheet" />
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,900|Poppins:100,200,300,300i,400,500,600,700,800,900" rel="stylesheet">
+<!------ Include the above in your HEAD tag ---------->
+
+
+<style>
+body {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: black
+}
+
+.bg-theme {
+    background: #09255D!important
+}
+
+a,
+a:visited {
+    color: purple;
+    webkit-transition: color .5s;
+    transition: color .5s;
+    text-decoration: none
+}
+
+footer .logo {
+    width: 200px;
+}
+
+footer ul li a {
+    color: #6191bc!important;
+    text-decoration: none !important;
+}
+
+footer ul li a:hover {
+    color: #AF8751!important
+}
+
+footer hr {
+    border-top: 1px solid #6191bc
+}
+
+</style>
+
 </head>
 <body>
-<div id="title">
-	<form action='/searchQuery'>
-		<input id="searchBox" type="text" name="searchQuery" placeholder="Search by category">
-		<input id="searchButton" type="submit" value="Search">
-
-
-	</form>
-
-	{% if not loggedIn %}
-	<div id="signInButton">
-		<a class="link" href="/loginForm">Sign In</a>
-	</div>
-	{% else %}
-	<div class="dropdown">
-		<button class="dropbtn">Hello, <br>{{firstName}}</button>
-		<div class="dropdown-content">
-			<a href="/account/orders">Your orders</a>
-			<a href="/account/profile">Your profile</a>
-			<hr>
-			<a href="/logout">Sign Out</a>
+	<div id="title">
+		<form>
+			<input id="searchBox" type="text" name="searchQuery">
+			<input id="searchButton" type="submit" value="Search">
+		</form>
+	
+		{% if not loggedIn %}
+		<div id="signInButton">
+			<a class="link" href="/loginForm">Sign In</a>
+		</div>
+		{% else %}
+		<div class="dropdown">
+			<button class="dropbtn">Hello, <br>{{firstName}}</button>
+			<div class="dropdown-content">
+				<a href="/account/orders">Your orders</a>
+				<a href="/account/profile">Your profile</a>
+				<hr>
+				<a href="/logout">Sign Out</a>
+			</div>
+		</div>
+		{% endif %}
+		<div id="kart">
+			<a class="link" href="/cart">
+				<img src={{url_for('static', filename='images/shoppingCart.png')}} id="cartIcon" />
+				CART {{noOfItems}}
+			</a>
 		</div>
 	</div>
-	{% endif %}
-	<div id="kart">
-		<a class="link" href="/cart">
-			<img src={{url_for('static', filename='images/shoppingCart.png')}} id="cartIcon" />
-			CART {{noOfItems}}
-		</a>
-	</div>
-</div>
-<div class="display">
-	<div class="displayCategory">
-		<h2>Shop by Category: </h2>
-		<ul>
-			{% for row in categoryData %}
-			<li><a href="/displayCategory?categoryId={{row[0]}}">{{row[1]}}</a></li>
+	<div class="display">
+		<div class="displayCategory">
+			<h2>Shop by Category: </h2>
+			<ul>
+				{% for row in categoryData %}
+				<li><a href="/displayCategory?categoryId={{row[0]}}">{{row[1]}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div>
+			<h2>Items</h2>
+			{% for data in itemData %}
+			<table>
+				<tr id="productName">
+					{% for row in data %}
+					<td>
+						{{row[1]}}
+					</td>
+					{% endfor %}
+				</tr>
+				<tr id="productImage">
+					{% for row in data %}
+					<td>
+						<a href="/productDescription?productId={{row[0]}}">
+							<img src={{ url_for('static', filename='uploads/' + row[4]) }} id="itemImage" />
+						</a>
+					</td>
+					{% endfor %}
+				</tr>
+				<tr id="productPrice">
+					{% for row in data %}
+					<td>
+						Rs {{row[2]}}
+					</td>
+					{% endfor %}
+				</tr>
+			</table>
 			{% endfor %}
-		</ul>
+		</div>
 	</div>
-	<div>
-		<h2>Items</h2>
-		{% for data in itemData %}
-		<table>
-			<tr id="productName">
-				{% for row in data %}
-				<td>
-					{{row[1]}}
-				</td>
-				{% endfor %}
-			</tr>
-			<tr id="productImage">
-				{% for row in data %}
-				<td>
-					<a href="/productDescription?productId={{row[0]}}">
-						<img src={{ url_for('static', filename='uploads/' + row[4]) }} id="itemImage" />
-					</a>
-				</td>
-				{% endfor %}
-			</tr>
-			<tr id="productPrice">
-				{% for row in data %}
-				<td>
-					Rs {{row[2]}}
-				</td>
-				{% endfor %}
-			</tr>
-		</table>
-		{% endfor %}
-	</div>
-</div>
+  <!--footer-->
+<!-- Footer -->
+
+
+<footer class="p-5 bg-theme text-small">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-3 text-white">
+                <img src="https://sunlimetech.com/images/logo-white.png" class=" mb-5" alt="">
+                <h5 class="text-white">Downloads</h5>
+                <ul class="list-unstyled list-inline">
+                    <li class="list-inline-item">
+                        <a href="https://www.fiverr.com/share/qb8D02" target="_blank"><img src="https://www.vectorvest.com/wp-content/themes/vectorvest/images/social-appstore-white.png" class=" mb-3" alt=""></a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="https://www.fiverr.com/share/qb8D02" target="_blank"><img src="https://www.vectorvest.com/wp-content/themes/vectorvest/images/social-googleplay-white.png" class=" mb-3" alt=""></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-12 col-sm-12 col-md-9">
+                <div class="row">
+                    <div class="col-12 col-sm-4">
+                        <h5 class="text-white">What Is Singh Hut?</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">What Is Singh Hut?</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">How it Works</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Manavdeep</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Testimonials</a></li>
+                        </ul>
+                        <h5 class="text-white">Our Policies</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Legal Information</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Privacy Policy</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Refund Policy</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                        <h5 class="text-white">Products</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.fiverr.com/share/qb8D02">Sunlimetech</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Stock Advisory – Mobile App</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">RoboTrader</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">RealTime Tracking</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Watch blog</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Watchdog</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Profitbit Pro</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">ProSpinner 7</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Pro Analyzer</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">OptionsHackPro</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">TimerSechudeule</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Portfolio</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                        <h5 class="text-white">Live Events</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">US Events</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">CA Events</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">EU Events</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">UK Events</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">AU Events</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">HK Events</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">SG Events</a></li>
+                        </ul>
+                        <h5 class="text-white">Other Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Pricing</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Blog</a></li>
+                            <li><a href="https://www.fiverr.com/share/qb8D02" target="_blank">Risk-Free Trial</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <ul class="list-unstyled list-inline mb-0 text-center">
+            <li class="list-inline-item">
+                <a href="https://www.fiverr.com/share/qb8D02" target="_blank">
+                    <img src="https://www.vectorvest.com/wp-content/themes/vectorvest/images/social-facebook-white.png" alt="">
+                </a>
+            </li>
+            <li class="list-inline-item">
+                <a href="https://www.fiverr.com/share/qb8D02" target="_blank">
+                    <img src="https://www.vectorvest.com/wp-content/themes/vectorvest/images/social-twitter-white.png" alt="">
+                </a>
+            </li>
+            <li class="list-inline-item">
+                <a href="https://www.fiverr.com/share/qb8D02" target="_blank">
+                    <img src="https://www.vectorvest.com/wp-content/themes/vectorvest/images/social-googleplus-white.png" alt="">
+                </a>
+            </li>
+            <li class="list-inline-item">
+                <a href="https://www.fiverr.com/share/qb8D02" target="_blank">
+                    <img src="https://www.vectorvest.com/wp-content/themes/vectorvest/images/social-linkdin-white.png" alt="">
+                </a>
+            </li>
+            <li class="list-inline-item">
+                <a href="https://www.fiverr.com/share/qb8D02" target="_blank">
+                    <img src="https://www.vectorvest.com/wp-content/themes/vectorvest/images/social-youtube-white.png" alt="">
+                </a>
+            </li>
+        </ul>
+        <hr>
+        <div class="col-12 text-center text-white">
+            <p>© 2019 Singh Hut Inc ®. All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
 </body>
 </html>
 

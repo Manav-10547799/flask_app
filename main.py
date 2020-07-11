@@ -4,6 +4,7 @@ from forms import CategorySearchForm
 from werkzeug.utils import secure_filename
 from instamojo_wrapper import Instamojo
 import requests
+from app import app
 
 app = Flask(__name__)
 app.secret_key = 'random string'
@@ -12,7 +13,7 @@ ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #Home page
-@app.route("/")
+@app.route("/", methods=['GET','POST'])
 def root():
     loggedIn, firstName, noOfItems = getLoginDetails()
     with sqlite3.connect('database.db') as conn:
@@ -22,6 +23,9 @@ def root():
         cur.execute('SELECT categoryId, name FROM categories')
         categoryData = cur.fetchall()
     itemData = parse(itemData)   
+    #search=CategorySearchForm(request.form)
+   # if request.method == 'GET':
+        #return search_results(search)
     return render_template('home.html', itemData=itemData, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryData=categoryData)
 
 #Fetch user details if logged in
@@ -106,15 +110,16 @@ def displayCategory():
         return render_template('displayCategory.html', data=data, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems, categoryName=categoryName)
 
 
-@app.route("/searchQuery")
-def search_results():
+@app.route("/searchQuery", methods=["GET","POST"])
+def search_results(search):
         loggedIn, firstName, noOfItems = getLoginDetails()
-
-        searchQuery = request.form("searchQuery")
-        with sqlite3.connect('database.db') as conn:
-            cur = conn.cursor()
-            cur.execute(" SELECT p.productid,p.price,p.description,p.image,p.stock,p.categoryId ,c.name, c.categoryId from products  p where p.name = searchQuery")
-            data = cur.fetchall()
+        data=[]
+        if search.data['search']=='':
+            with sqlite3.connect('database.db') as conn:
+                cur = conn.cursor()
+                cur.execute(" SELECT p.productid,p.price,p.description,p.image,p.stock,p.categoryId ,c.name, c.categoryId from products  p ,categories c where  c.categoryId=p.categoryId ")
+                data = cur.fetchall()
+   
         conn.commit()
         
         categoryName = data[0][4]
